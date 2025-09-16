@@ -40,7 +40,8 @@
         font-size: 1.1rem;
       }
 
-      a {
+      a,
+      .celebrate-button {
         display: inline-flex;
         align-items: center;
         justify-content: center;
@@ -55,9 +56,75 @@
       }
 
       a:hover,
-      a:focus-visible {
+      a:focus-visible,
+      .celebrate-button:hover,
+      .celebrate-button:focus-visible {
         transform: translateY(-3px);
         box-shadow: 0 12px 24px rgba(99, 102, 241, 0.35);
+      }
+
+      .celebrate-button {
+        border: none;
+        cursor: pointer;
+        font-size: 1rem;
+        margin-top: 1.5rem;
+      }
+
+      .celebrate-button:focus-visible {
+        outline: 3px solid rgba(99, 102, 241, 0.5);
+        outline-offset: 4px;
+      }
+
+      .celebration {
+        position: fixed;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        pointer-events: none;
+        background: rgba(255, 255, 255, 0.55);
+        backdrop-filter: blur(2px);
+        opacity: 0;
+        transition: opacity 200ms ease;
+        overflow: hidden;
+      }
+
+      .celebration.is-active {
+        opacity: 1;
+      }
+
+      .celebration.is-fading {
+        opacity: 0;
+      }
+
+      .celebration__message {
+        font-size: clamp(1.5rem, 4vw, 2.25rem);
+        font-weight: 700;
+        color: #4338ca;
+        text-shadow: 0 8px 24px rgba(67, 56, 202, 0.3);
+      }
+
+      .celebration__confetti {
+        position: absolute;
+        top: -10%;
+        left: 50%;
+        width: 12px;
+        height: 18px;
+        border-radius: 4px;
+        transform: translateX(var(--offset-x, 0)) rotate(0deg);
+        animation: confetti-fall 2600ms forwards;
+        opacity: 0;
+      }
+
+      @keyframes confetti-fall {
+        0% {
+          transform: translate(var(--offset-x, 0), -20%) rotate(0deg);
+          opacity: 1;
+        }
+        100% {
+          transform: translate(calc(var(--offset-x, 0) * 1.15), 120vh)
+            rotate(var(--rotate, 180deg));
+          opacity: 0;
+        }
       }
     </style>
   </head>
@@ -68,6 +135,59 @@
       <a href="https://developer.mozilla.org/" target="_blank" rel="noreferrer">
         了解更多 Web 开发知识
       </a>
+      <button class="celebrate-button" type="button" id="celebrateButton">
+        点击庆祝一下 🎉
+      </button>
     </main>
+    <script>
+      const celebrateButton = document.getElementById("celebrateButton");
+
+      const colors = ["#f97316", "#14b8a6", "#8b5cf6", "#facc15", "#ef4444"];
+
+      celebrateButton?.addEventListener("click", () => {
+        const overlay = document.createElement("div");
+        overlay.className = "celebration";
+
+        const message = document.createElement("div");
+        message.className = "celebration__message";
+        message.textContent = "🎉 太棒了！庆祝时刻！";
+        overlay.appendChild(message);
+
+        const confettiCount = 28;
+        for (let i = 0; i < confettiCount; i += 1) {
+          const piece = document.createElement("span");
+          piece.className = "celebration__confetti";
+
+          const offset = (Math.random() - 0.5) * 200;
+          const rotation = (Math.random() - 0.5) * 720;
+          const hue = colors[i % colors.length];
+          const delay = Math.random() * 200;
+
+          piece.style.setProperty("--offset-x", `${offset}%`);
+          piece.style.setProperty("--rotate", `${rotation}deg`);
+          piece.style.setProperty("background", hue);
+          piece.style.animationDelay = `${delay}ms`;
+
+          overlay.appendChild(piece);
+        }
+
+        document.body.appendChild(overlay);
+
+        requestAnimationFrame(() => {
+          overlay.classList.add("is-active");
+        });
+
+        const fadeOutDelay = 2300;
+        const removeDelay = fadeOutDelay + 600;
+
+        setTimeout(() => {
+          overlay.classList.add("is-fading");
+        }, fadeOutDelay);
+
+        setTimeout(() => {
+          overlay.remove();
+        }, removeDelay);
+      });
+    </script>
   </body>
 </html>
