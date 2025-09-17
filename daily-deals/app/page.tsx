@@ -180,7 +180,7 @@ export default function HomePage() {
               ☰
             </button>
             <Link href="#" className="flex items-center gap-1 text-2xl font-semibold">
-              <span className="text-red-500">YouTube</span>
+              <span className="text-red-500">zhenghong</span>
             </Link>
           </div>
 
